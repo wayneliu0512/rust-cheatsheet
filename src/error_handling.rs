@@ -1,7 +1,7 @@
 use std::fs::File;
 use std::io::{self, Read};
 
-pub fn result() {
+pub fn demonstrate() {
     let greeting_file_result = File::open("target/hello.txt");
 
     let greeting_file = match greeting_file_result {
@@ -34,12 +34,16 @@ pub fn result() {
     dbg!(greeting_file);
 
     // Propagating errors
-    let username = propagate_error().unwrap();
-    dbg!(username);
+    dbg!(propagate_error_result().unwrap());
+    dbg!(propagate_error_option("hello").unwrap());
 }
 
-fn propagate_error() -> Result<String, io::Error> {
+fn propagate_error_result() -> Result<String, io::Error> {
     let mut username = String::new();
     File::open("target/hello.txt")?.read_to_string(&mut username)?;
     Ok(username)
+}
+
+fn propagate_error_option(text: &str) -> Option<char> {
+    text.lines().next()?.chars().last()
 }

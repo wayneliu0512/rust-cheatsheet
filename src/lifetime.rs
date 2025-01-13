@@ -46,4 +46,57 @@ struct ImportantExcerpt<'a> {
 }
 
 // Lifetime Elision
+// Lifetimes on function or method parameters are called input lifetimes,
+// and lifetimes on return values are called output lifetimes.
+// 
+// The first rule applies to input lifetimes, and the second and third rules 
+// apply to output lifetimes.
+// 
+// 1. Each elided lifetime in the parameters becomes a distinct lifetime parameter.
+//   fn foo<'a>(x: &'a i32)
+//   fn foo<'a, 'b>(x: &'a i32, y: &'b i32)
+// 
+// 2. If there is exactly one input lifetime parameter, that lifetime is assigned to
+// all output lifetime parameters.
+//   fn foo<'a>(x: &'a i32) -> &'a i32
+// 
+// 3. If there are multiple input lifetime parameters, but one of them is &self or 
+// &mut self, the lifetime of self is assigned to all output lifetime parameters.
+//   impl<'a> ImportantExcerpt<'a> {
+//       fn announce_and_return_part(&self, announcement: &str) -> &str {
+//           println!("Attention please: {announcement}");
+//           self.part
+//       }
+//   }
 
+// The Static Lifetime
+pub fn static_() {
+    let s: &'static str = "I have a static lifetime.";
+    dbg!(s);
+}
+
+// Generic Type Parameters, Trait Bounds, and Lifetimes Together
+pub fn generic_trait_bound_lifetime() {
+    let string1 = String::from("abcd");
+    let string2 = "xyz";
+    let result = longest_with_an_announcement(string1.as_str(), string2, "Today is a good day");
+    println!("The longest string is {result}");
+}
+
+use std::fmt::Display;
+
+fn longest_with_an_announcement<'a, T>(
+    x: &'a str,
+    y: &'a str,
+    ann: T,
+) -> &'a str
+where
+    T: Display,
+{
+    println!("Announcement! {ann}");
+    if x.len() > y.len() {
+        x
+    } else {
+        y
+    }
+}

@@ -5,8 +5,10 @@ mod generic;
 mod trait_;
 mod lifetime;
 mod functional;
+mod mod_;
 mod smart_pointer;
 mod concurrency;
+mod object_oriented;
 
 fn main() {
     basic::primitive_type();
@@ -34,6 +36,8 @@ fn main() {
     functional::closure();
     functional::fn_trait();
 
+    mod_::mod_();
+
     smart_pointer::deref();
     smart_pointer::deref_coercion();
     smart_pointer::drop();
@@ -42,4 +46,7 @@ fn main() {
 
     concurrency::thread();
     concurrency::message_passing();
+    concurrency::shared_state();
+
+    object_oriented::trait_object();
 }

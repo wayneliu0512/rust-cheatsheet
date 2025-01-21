@@ -65,3 +65,58 @@ fn multi_producer() {
     let received = rx.recv().unwrap();
     println!("Got: {received}");
 }
+
+pub fn shared_state() {
+    mutex();
+    arc();
+}
+
+use std::sync::{Mutex, Arc};
+fn mutex() {
+    let m = Mutex::new(5);
+
+    {
+        let mut num = m.lock().unwrap();
+        *num = 6;
+    }
+
+    println!("m = {m:?}");
+}
+
+// `Arc<T>` is a type like `Rc<T>`` that is safe to use in concurrent
+// situations. The a stands for atomic, meaning it’s an atomically reference
+// counted type
+fn arc() {
+    let counter = Arc::new(Mutex::new(0));
+    let mut handles = vec![];
+
+    for _ in 0..10 {
+        let counter = Arc::clone(&counter);
+        let handle = thread::spawn(move || {
+            let mut num = counter.lock().unwrap();
+
+            *num += 1;
+        });
+        handles.push(handle);
+    }
+
+    for handle in handles {
+        handle.join().unwrap();
+    }
+
+    println!("Result: {}", *counter.lock().unwrap());
+}
+
+
+// `Sync` and `Send` traits
+//
+// The `Send` marker trait indicates that ownership of values of the type 
+// implementing `Send` can be transferred between threads. Almost every
+// Rust type is `Send`. Any type composed entirely of `Send` types is 
+// automatically marked as `Send` as well.
+//
+// The `Sync` marker trait indicates that it is safe for the type implementing
+// `Sync` to be referenced from multiple threads. In other words, any type `T`
+// is `Sync` if `&T` (a reference to `T`) is `Send`, meaning the reference can
+// be sent safely to another thread. Similar to `Send`, primitive types are
+// `Sync`, and types composed entirely of types that are `Sync` are also `Sync`.

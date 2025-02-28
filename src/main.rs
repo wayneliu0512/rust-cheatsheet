@@ -9,6 +9,7 @@ mod mod_;
 mod smart_pointer;
 mod concurrency;
 mod object_oriented;
+mod pattern;
 
 fn main() {
     basic::primitive_type();
@@ -49,4 +50,9 @@ fn main() {
     concurrency::shared_state();
 
     object_oriented::trait_object();
+
+    pattern::pattern();
+    pattern::ignore();
+    pattern::extra_condition();
+    pattern::binding();
 }
